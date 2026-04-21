@@ -1,0 +1,35 @@
+{
+  "modulePathMap": {
+    "entry": "C:\\Users\\35906\\Desktop\\A\\SimpleVideo\\SimpleVideo\\entry"
+  },
+  "compileMode": "esmodule",
+  "projectRootPath": "C:\\Users\\35906\\Desktop\\A\\SimpleVideo\\SimpleVideo",
+  "nodeModulesPath": "C:\\Users\\35906\\Desktop\\A\\SimpleVideo\\SimpleVideo\\entry\\build\\default\\intermediates\\loader_out\\default\\node_modules",
+  "byteCodeHarInfo": {},
+  "declarationEntry": [],
+  "moduleName": "entry",
+  "hspNameOhmMap": {},
+  "harNameOhmMap": {},
+  "packageManagerType": "ohpm",
+  "compileEntry": [
+    "C:\\Users\\35906\\Desktop\\A\\SimpleVideo\\SimpleVideo\\entry\\src\\main\\ets\\pages\\VideoPlayerPage.ets"
+  ],
+  "otherCompileFiles": [],
+  "dynamicImportLibInfo": {},
+  "routerMap": [
+    {
+      "ohmurl": "@bundle:com.example.simplevideo/entry/ets/pages/VideoPlayerPage",
+      "name": "VideoPlayerPage",
+      "pageSourceFile": "C:\\Users\\35906\\Desktop\\A\\SimpleVideo\\SimpleVideo\\entry\\src\\main\\ets\\pages\\VideoPlayerPage.ets",
+      "buildFunction": "VideoPlayerPageBuilder"
+    }
+  ],
+  "hspResourcesMap": {},
+  "updateVersionInfo": {},
+  "customizedHar": false,
+  "anBuildOutPut": "C:\\Users\\35906\\Desktop\\A\\SimpleVideo\\SimpleVideo\\entry\\build\\default\\intermediates\\loader_out\\default\\an\\arm64-v8a",
+  "anBuildMode": "type",
+  "patchConfig": {
+    "changedFileList": "C:\\Users\\35906\\Desktop\\A\\SimpleVideo\\SimpleVideo\\entry\\build\\default\\intermediates\\patch\\default\\changedFileList.json"
+  }
+}

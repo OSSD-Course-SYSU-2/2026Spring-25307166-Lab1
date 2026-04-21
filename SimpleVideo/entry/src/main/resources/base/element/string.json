@@ -1,0 +1,88 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "SimpleVideo"
+    },
+    {
+      "name": "secondPage",
+      "value": "pages/play"
+    },
+    {
+      "name": "slider_startTime",
+      "value": "00:00"
+    },
+    {
+      "name": "back",
+      "value": "视频"
+    },
+    {
+      "name": "empty",
+      "value": "empty"
+    },
+    {
+      "name": "reason",
+      "value": "Allow applications to use the Internet network in video player scenarios."
+    },
+    {
+      "name": "message",
+      "value": "请检查网络"
+    },
+    {
+      "name": "RECENT",
+      "value": "最近播放"
+    },
+    {
+      "name": "RECOMMEND",
+      "value": "为你推荐"
+    },
+    {
+      "name": "net_video",
+      "value": "https://media.w3.org/2010/05/sintel/trailer.mp4"
+    },
+    {
+      "name": "video_first",
+      "value": "视频1"
+    },
+    {
+      "name": "video_second",
+      "value": "视频2"
+    },
+    {
+      "name": "video_third",
+      "value": "视频3"
+    },
+    {
+      "name": "video_first_url",
+      "value": "https://media.w3.org/2010/05/sintel/trailer.mp4"
+    },
+    {
+      "name": "video_second_url",
+      "value": "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+    },
+    {
+      "name": "video_third_url",
+      "value": "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
+    },
+    {
+      "name": "danmaku_hint",
+      "value": "点击此处发送弹幕"
+    },
+    {
+      "name": "danmaku_send",
+      "value": "发送"
+    },
+    {
+      "name": "danmaku_cancel",
+      "value": "取消"
+    }
+  ]
+}
