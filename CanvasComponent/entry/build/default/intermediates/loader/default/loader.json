@@ -1,0 +1,26 @@
+{
+  "modulePathMap": {
+    "entry": "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry"
+  },
+  "compileMode": "esmodule",
+  "projectRootPath": "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent",
+  "nodeModulesPath": "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\build\\default\\intermediates\\loader_out\\default\\node_modules",
+  "byteCodeHarInfo": {},
+  "declarationEntry": [],
+  "moduleName": "entry",
+  "hspNameOhmMap": {},
+  "harNameOhmMap": {},
+  "packageManagerType": "ohpm",
+  "compileEntry": [],
+  "otherCompileFiles": [],
+  "dynamicImportLibInfo": {},
+  "routerMap": [],
+  "hspResourcesMap": {},
+  "updateVersionInfo": {},
+  "customizedHar": false,
+  "anBuildOutPut": "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\build\\default\\intermediates\\loader_out\\default\\an\\arm64-v8a",
+  "anBuildMode": "type",
+  "patchConfig": {
+    "changedFileList": "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\build\\default\\intermediates\\patch\\default\\changedFileList.json"
+  }
+}
