@@ -111,22 +111,41 @@ export struct AdventurePage {
     Column() {
       Row() {
         Text(`战斗力: ${this.gameManager.getUserState().combatPower}`)
-          .fontSize(14)
+          .fontSize(12)
           .fontColor('#ff6666')
           .layoutWeight(1)
         
         Text(`交际: ${this.gameManager.getUserState().social}`)
-          .fontSize(14)
+          .fontSize(12)
           .fontColor('#66ff66')
           .layoutWeight(1)
         
         Text(`幸运: ${this.gameManager.getUserState().luck}`)
-          .fontSize(14)
+          .fontSize(12)
           .fontColor('#6666ff')
           .layoutWeight(1)
       }
       .width('90%')
-      .padding({ top: 5, bottom: 5 })
+      .padding({ top: 2, bottom: 2 })
+      
+      Row() {
+        Text(`神秘: ${this.gameManager.getUserState().mysticism}`)
+          .fontSize(12)
+          .fontColor('#9966ff')
+          .layoutWeight(1)
+        
+        Text(`感知: ${this.gameManager.getUserState().perception}`)
+          .fontSize(12)
+          .fontColor('#ff9966')
+          .layoutWeight(1)
+        
+        Text(`技艺: ${this.gameManager.getUserState().craftsmanship}`)
+          .fontSize(12)
+          .fontColor('#66ffff')
+          .layoutWeight(1)
+      }
+      .width('90%')
+      .padding({ top: 2, bottom: 2 })
     }
     .width('90%')
     .backgroundColor('rgba(40, 40, 40, 0.8)')
@@ -212,34 +231,39 @@ export struct AdventurePage {
         .fontColor('#FFD700')
         .margin({ bottom: 15 })
       
-      Column() {
-        ForEach(AllItems.filter(item => item.usableInAdventure), (item: Item) => {
-          Row() {
-            Text(`${item.icon} ${item.name}`)
-              .fontSize(16)
-              .fontColor(Color.White)
-              .layoutWeight(1)
-            
-            Text(`x${this.gameManager.getItemCount(item.id)}`)
-              .fontSize(14)
-              .fontColor('#aaaaaa')
-            
-            Toggle({ type: ToggleType.Checkbox, isOn: this.selectedItems.includes(item.id) })
-              .onChange((isOn: boolean) => {
-                if (isOn && this.selectedItems.length < 3) {
-                  this.selectedItems.push(item.id)
-                } else if (!isOn) {
-                  this.selectedItems = this.selectedItems.filter(id => id !== item.id)
-                }
-              })
-              .enabled(this.gameManager.getItemCount(item.id) > 0)
-          }
-          .width('100%')
-          .padding(10)
-        })
+      Scroll() {
+        Column() {
+          ForEach(AllItems.filter(item => item.usableInAdventure), (item: Item) => {
+            Row() {
+              Text(`${item.icon} ${item.name}`)
+                .fontSize(16)
+                .fontColor(Color.White)
+                .layoutWeight(1)
+              
+              Text(`x${this.gameManager.getItemCount(item.id)}`)
+                .fontSize(14)
+                .fontColor('#aaaaaa')
+              
+              Toggle({ type: ToggleType.Checkbox, isOn: this.selectedItems.includes(item.id) })
+                .onChange((isOn: boolean) => {
+                  if (isOn && this.selectedItems.length < 3) {
+                    this.selectedItems.push(item.id)
+                  } else if (!isOn) {
+                    this.selectedItems = this.selectedItems.filter(id => id !== item.id)
+                  }
+                })
+                .enabled(this.gameManager.getItemCount(item.id) > 0)
+            }
+            .width('100%')
+            .padding(10)
+          })
+        }
+        .width('100%')
       }
       .width('100%')
       .height('50%')
+      .scrollBar(BarState.Off)
+      .edgeEffect(EdgeEffect.Spring)
       
       Row() {
         Button('取消')
@@ -491,35 +515,98 @@ export struct AdventurePage {
     const userValue = this.gameManager.getUserState().luck
     
     const success = diceRoll <= userValue
+    const criticalSuccess = diceRoll >= 95
+    const criticalFailure = diceRoll <= 5
     
     let message = ''
     const rewards: EventReward = {}
     const failures: EventFailure = { staminaLoss: 0 }
     
-    if (success) {
+    const dangerLossChance = this.getDangerLossChance(location.danger)
+    const lossRoll = Math.random() * 100
+    
+    if (criticalSuccess) {
       const rewardType = location.mainReward[0]
       const materials = AllMaterials.filter(m => m.colorType === rewardType)
       if (materials.length > 0) {
         const material = materials[Math.floor(Math.random() * materials.length)]
-        const amount = Math.floor(Math.random() * 3) + 1
+        const amount = Math.floor(Math.random() * 16) + 15
         this.gameManager.addMaterial(material.id, amount)
         rewards.materialId = material.id
         rewards.materialAmount = amount
-        message = `探索成功！在${location.name}发现了${material.name}！`
+        
+        const itemDropChance = 0.5
+        if (Math.random() < itemDropChance) {
+          const itemAmount = Math.floor(Math.random() * 3) + 1
+          const randomItem = AllItems[Math.floor(Math.random() * AllItems.length)]
+          this.gameManager.addItem(randomItem.id, itemAmount)
+          rewards.itemId = randomItem.id
+          rewards.itemAmount = itemAmount
+        }
+        
+        const goldAmount = Math.floor(Math.random() * 200) + 100
+        this.gameManager.addGold(goldAmount)
+        rewards.gold = goldAmount
+        
+        message = `大成功！在${location.name}发现了${material.name}x${amount}！还获得了额外奖励！`
       }
+    } else if (success) {
+      const rewardType = location.mainReward[0]
+      const materials = AllMaterials.filter(m => m.colorType === rewardType)
+      if (materials.length > 0) {
+        const material = materials[Math.floor(Math.random() * materials.length)]
+        const amount = Math.floor(Math.random() * 16) + 5
+        this.gameManager.addMaterial(material.id, amount)
+        rewards.materialId = material.id
+        rewards.materialAmount = amount
+        
+        const itemDropChance = 0.25
+        if (Math.random() < itemDropChance) {
+          const itemAmount = Math.floor(Math.random() * 3) + 1
+          const randomItem = AllItems[Math.floor(Math.random() * AllItems.length)]
+          this.gameManager.addItem(randomItem.id, itemAmount)
+          rewards.itemId = randomItem.id
+          rewards.itemAmount = itemAmount
+        }
+        
+        message = `探索成功！在${location.name}发现了${material.name}x${amount}！`
+      }
+    } else if (criticalFailure) {
+      this.gameManager.useStamina(20)
+      failures.staminaLoss = 20
+      const goldLoss = Math.floor(Math.random() * 50) + 30
+      this.gameManager.addGold(-goldLoss)
+      failures.goldLoss = goldLoss
+      message = `大失败！在${location.name}遭遇严重挫折，损失惨重！`
     } else {
-      message = `探索${location.name}没有收获，但至少安全返回了。`
+      if (lossRoll < dangerLossChance) {
+        this.gameManager.useStamina(10)
+        failures.staminaLoss = 10
+        message = `探索${location.name}失败，损失了一些体力。`
+      } else {
+        message = `探索${location.name}没有收获，但至少安全返回了。`
+      }
     }
     
     return {
       success: success,
-      criticalSuccess: false,
-      criticalFailure: false,
+      criticalSuccess: criticalSuccess,
+      criticalFailure: criticalFailure,
       diceRoll: diceRoll,
       userValue: userValue,
       message: message,
       rewards: rewards,
       failures: failures
+    }
+  }
+  
+  getDangerLossChance(danger: string): number {
+    switch (danger) {
+      case '中等': return 30
+      case '较高': return 45
+      case '高': return 60
+      case '极高': return 75
+      default: return 20
     }
   }
 }

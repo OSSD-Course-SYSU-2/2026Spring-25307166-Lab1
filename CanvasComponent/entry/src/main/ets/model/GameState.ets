@@ -37,6 +37,9 @@ export interface UserState {
   combatPower: number
   social: number
   luck: number
+  mysticism: number
+  perception: number
+  craftsmanship: number
   stamina: number
   maxStamina: number
   lastStaminaUpdate: number

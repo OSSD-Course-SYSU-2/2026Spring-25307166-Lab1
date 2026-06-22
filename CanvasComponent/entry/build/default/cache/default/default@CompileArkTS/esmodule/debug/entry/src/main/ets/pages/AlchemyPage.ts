@@ -783,6 +783,13 @@ export class AlchemyPage extends ViewPU {
         return `#${color.r.toString(16).padStart(2, '0')}${color.g.toString(16).padStart(2, '0')}${color.b.toString(16).padStart(2, '0')}`;
     }
     startAlchemy() {
+        // 消耗原材料
+        this.selectedMaterials.forEach((amount: number, materialId: string) => {
+            this.gameManager.useMaterial(materialId, amount);
+        });
+        // 清空已选材料
+        this.selectedMaterials = new Map();
+        this.totalAmount = 0;
         this.isProcessing = true;
         if (this.bubbleInterval !== -1) {
             clearInterval(this.bubbleInterval);

@@ -7,14 +7,26 @@ interface CommissionPage_Params {
     selectedCommission?: Commission | null;
     showDialog?: boolean;
     currentTab?: number;
+    showMerchant?: boolean;
+    merchantItems?: ShopItem[];
+    merchantMessage?: string;
     gameManager?: GameManager;
     npcNames?: string[];
 }
 import { GamePage } from "@bundle:com.example.canvascomponent/entry/ets/model/GameTypes";
 import type { Commission } from '../model/GameState';
-import { AllMaterials } from "@bundle:com.example.canvascomponent/entry/ets/model/Material";
+import { AllMaterials, getMaterialById } from "@bundle:com.example.canvascomponent/entry/ets/model/Material";
 import type { MaterialData } from "@bundle:com.example.canvascomponent/entry/ets/model/Material";
 import { GameManager } from "@bundle:com.example.canvascomponent/entry/ets/model/GameManager";
+import { AllItems, getItemById } from "@bundle:com.example.canvascomponent/entry/ets/model/Item";
+import { MaterialColors } from "@bundle:com.example.canvascomponent/entry/ets/model/GameTypes";
+import { MaterialPatternDrawer } from "@bundle:com.example.canvascomponent/entry/ets/common/utils/MaterialPatternDrawer";
+interface ShopItem {
+    type: 'material' | 'item';
+    id: string;
+    price: number;
+    amount: number;
+}
 export class CommissionPage extends ViewPU {
     constructor(parent, params, __localStorage, elmtId = -1, paramsLambda = undefined, extraInfo) {
         super(parent, __localStorage, elmtId, extraInfo);
@@ -26,6 +38,9 @@ export class CommissionPage extends ViewPU {
         this.__selectedCommission = new ObservedPropertyObjectPU(null, this, "selectedCommission");
         this.__showDialog = new ObservedPropertySimplePU(false, this, "showDialog");
         this.__currentTab = new ObservedPropertySimplePU(0, this, "currentTab");
+        this.__showMerchant = new ObservedPropertySimplePU(false, this, "showMerchant");
+        this.__merchantItems = new ObservedPropertyObjectPU([], this, "merchantItems");
+        this.__merchantMessage = new ObservedPropertySimplePU('', this, "merchantMessage");
         this.gameManager = GameManager.getInstance();
         this.npcNames = ['炼金商人', '古老法师', '神秘旅者', '药剂大师', '元素使者'];
         this.setInitiallyProvidedValue(params);
@@ -44,6 +59,15 @@ export class CommissionPage extends ViewPU {
         if (params.currentTab !== undefined) {
             this.currentTab = params.currentTab;
         }
+        if (params.showMerchant !== undefined) {
+            this.showMerchant = params.showMerchant;
+        }
+        if (params.merchantItems !== undefined) {
+            this.merchantItems = params.merchantItems;
+        }
+        if (params.merchantMessage !== undefined) {
+            this.merchantMessage = params.merchantMessage;
+        }
         if (params.gameManager !== undefined) {
             this.gameManager = params.gameManager;
         }
@@ -59,6 +83,9 @@ export class CommissionPage extends ViewPU {
         this.__selectedCommission.purgeDependencyOnElmtId(rmElmtId);
         this.__showDialog.purgeDependencyOnElmtId(rmElmtId);
         this.__currentTab.purgeDependencyOnElmtId(rmElmtId);
+        this.__showMerchant.purgeDependencyOnElmtId(rmElmtId);
+        this.__merchantItems.purgeDependencyOnElmtId(rmElmtId);
+        this.__merchantMessage.purgeDependencyOnElmtId(rmElmtId);
     }
     aboutToBeDeleted() {
         this.__currentPage.aboutToBeDeleted();
@@ -66,6 +93,9 @@ export class CommissionPage extends ViewPU {
         this.__selectedCommission.aboutToBeDeleted();
         this.__showDialog.aboutToBeDeleted();
         this.__currentTab.aboutToBeDeleted();
+        this.__showMerchant.aboutToBeDeleted();
+        this.__merchantItems.aboutToBeDeleted();
+        this.__merchantMessage.aboutToBeDeleted();
         SubscriberManager.Get().delete(this.id__());
         this.aboutToBeDeletedInternal();
     }
@@ -104,10 +134,88 @@ export class CommissionPage extends ViewPU {
     set currentTab(newValue: number) {
         this.__currentTab.set(newValue);
     }
+    private __showMerchant: ObservedPropertySimplePU<boolean>;
+    get showMerchant() {
+        return this.__showMerchant.get();
+    }
+    set showMerchant(newValue: boolean) {
+        this.__showMerchant.set(newValue);
+    }
+    private __merchantItems: ObservedPropertyObjectPU<ShopItem[]>;
+    get merchantItems() {
+        return this.__merchantItems.get();
+    }
+    set merchantItems(newValue: ShopItem[]) {
+        this.__merchantItems.set(newValue);
+    }
+    private __merchantMessage: ObservedPropertySimplePU<string>;
+    get merchantMessage() {
+        return this.__merchantMessage.get();
+    }
+    set merchantMessage(newValue: string) {
+        this.__merchantMessage.set(newValue);
+    }
     private gameManager: GameManager;
     private npcNames: string[];
     aboutToAppear() {
         this.generateCommissions();
+        this.checkMerchant();
+    }
+    checkMerchant() {
+        const merchantChance = Math.random() * 100;
+        if (merchantChance >= 20) {
+            this.showMerchant = true;
+            this.generateMerchantItems();
+        }
+        else {
+            this.showMerchant = false;
+            this.merchantMessage = '今天商人没有出摊';
+        }
+    }
+    generateMerchantItems() {
+        this.merchantItems = [];
+        const materialCount = Math.floor(Math.random() * 4) + 3;
+        for (let i = 0; i < materialCount; i++) {
+            const material = AllMaterials[Math.floor(Math.random() * AllMaterials.length)];
+            const rarity = material.difficulty;
+            let basePrice = 30;
+            if (rarity === '中等')
+                basePrice = 50;
+            else if (rarity === '较高')
+                basePrice = 80;
+            else if (rarity === '高')
+                basePrice = 120;
+            else if (rarity === '极高')
+                basePrice = 200;
+            const price = basePrice + Math.floor(Math.random() * 30);
+            const amount = Math.floor(Math.random() * 5) + 3;
+            this.merchantItems.push({
+                type: 'material',
+                id: material.id,
+                price: price,
+                amount: amount
+            });
+        }
+        const itemCount = Math.floor(Math.random() * 3) + 1;
+        for (let i = 0; i < itemCount; i++) {
+            const item = AllItems[Math.floor(Math.random() * AllItems.length)];
+            const rarity = item.rarity;
+            let basePrice = 50;
+            if (rarity === 'rare')
+                basePrice = 150;
+            else if (rarity === 'epic')
+                basePrice = 400;
+            else if (rarity === 'legendary')
+                basePrice = 1000;
+            const price = basePrice + Math.floor(Math.random() * 100);
+            const amount = Math.floor(Math.random() * 2) + 1;
+            this.merchantItems.push({
+                type: 'item',
+                id: item.id,
+                price: price,
+                amount: amount
+            });
+        }
     }
     generateCommissions() {
         this.commissions = [];
@@ -163,6 +271,7 @@ export class CommissionPage extends ViewPU {
             Button.height(30);
             Button.onClick(() => {
                 this.generateCommissions();
+                this.checkMerchant();
             });
         }, Button);
         Button.pop();
@@ -196,6 +305,14 @@ export class CommissionPage extends ViewPU {
             });
         }, Button);
         Button.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Button.createWithLabel('商人区');
+            Button.backgroundColor(this.currentTab === 2 ? '#4a90e2' : '#666666');
+            Button.onClick(() => {
+                this.currentTab = 2;
+            });
+        }, Button);
+        Button.pop();
         Row.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Scroll.create();
@@ -224,7 +341,7 @@ export class CommissionPage extends ViewPU {
                     ForEach.pop();
                 });
             }
-            else {
+            else if (this.currentTab === 1) {
                 this.ifElseBranchUpdateFunction(1, () => {
                     this.observeComponentCreation2((elmtId, isInitialRender) => {
                         ForEach.create();
@@ -254,6 +371,11 @@ export class CommissionPage extends ViewPU {
                         }
                     }, If);
                     If.pop();
+                });
+            }
+            else {
+                this.ifElseBranchUpdateFunction(2, () => {
+                    this.MerchantArea.bind(this)();
                 });
             }
         }, If);
@@ -520,6 +642,219 @@ export class CommissionPage extends ViewPU {
         userState.acceptedCommissions = userState.acceptedCommissions.filter(c => c.id !== commission.id);
         const penalty = Math.floor(commission.reward * 0.2);
         this.gameManager.addGold(-penalty);
+    }
+    MerchantArea(parent = null) {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.width('100%');
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            if (this.showMerchant) {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create('🏪 神秘商人 🏪');
+                        Text.fontSize(20);
+                        Text.fontColor('#FFD700');
+                        Text.fontWeight(FontWeight.Bold);
+                        Text.margin({ top: 20, bottom: 15 });
+                    }, Text);
+                    Text.pop();
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create(`金币: ${this.gameManager.getUserState().gold}`);
+                        Text.fontSize(16);
+                        Text.fontColor('#FFD700');
+                        Text.margin({ bottom: 15 });
+                    }, Text);
+                    Text.pop();
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create('售卖物品:');
+                        Text.fontSize(16);
+                        Text.fontColor('#aaaaaa');
+                        Text.margin({ bottom: 10 });
+                    }, Text);
+                    Text.pop();
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        ForEach.create();
+                        const forEachItemGenFunction = _item => {
+                            const shopItem = _item;
+                            this.ShopItemCard.bind(this)(shopItem);
+                        };
+                        this.forEachUpdateFunction(elmtId, this.merchantItems, forEachItemGenFunction);
+                    }, ForEach);
+                    ForEach.pop();
+                });
+            }
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Column.create();
+                        Column.width('100%');
+                        Column.justifyContent(FlexAlign.Center);
+                    }, Column);
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create('🏪');
+                        Text.fontSize(60);
+                        Text.margin({ top: 50 });
+                    }, Text);
+                    Text.pop();
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create(this.merchantMessage);
+                        Text.fontSize(18);
+                        Text.fontColor('#aaaaaa');
+                        Text.margin({ top: 20 });
+                    }, Text);
+                    Text.pop();
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create('商人可能明天会来，请明天再来看看吧。');
+                        Text.fontSize(14);
+                        Text.fontColor('#666666');
+                        Text.margin({ top: 10 });
+                    }, Text);
+                    Text.pop();
+                    Column.pop();
+                });
+            }
+        }, If);
+        If.pop();
+        Column.pop();
+    }
+    ShopItemCard(shopItem: ShopItem, parent = null) {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Row.create();
+            Row.width('100%');
+            Row.padding(10);
+            Row.backgroundColor('rgba(50, 50, 50, 0.9)');
+            Row.borderRadius(8);
+            Row.margin({ bottom: 10 });
+        }, Row);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            if (shopItem.type === 'material') {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Column.create();
+                        Column.width(50);
+                    }, Column);
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Stack.create();
+                        Stack.width(40);
+                        Stack.height(40);
+                    }, Stack);
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Canvas.create(new CanvasRenderingContext2D(new RenderingContextSettings(true)));
+                        Canvas.width(40);
+                        Canvas.height(40);
+                        Canvas.onReady(() => {
+                            const material = getMaterialById(shopItem.id);
+                            if (material) {
+                                let ctx = new CanvasRenderingContext2D(new RenderingContextSettings(true));
+                                ctx.clearRect(0, 0, 40, 40);
+                                const color = MaterialColors[material.colorType];
+                                ctx.fillStyle = `#${color.r.toString(16).padStart(2, '0')}${color.g.toString(16).padStart(2, '0')}${color.b.toString(16).padStart(2, '0')}`;
+                                ctx.beginPath();
+                                ctx.arc(20, 20, 18, 0, Math.PI * 2);
+                                ctx.fill();
+                                MaterialPatternDrawer.drawPattern(ctx, shopItem.id, 20, 20, 15);
+                            }
+                        });
+                    }, Canvas);
+                    Canvas.pop();
+                    Stack.pop();
+                    Column.pop();
+                });
+            }
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create(this.getItemIcon(shopItem.id));
+                        Text.fontSize(32);
+                        Text.width(50);
+                    }, Text);
+                    Text.pop();
+                });
+            }
+        }, If);
+        If.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.layoutWeight(1);
+            Column.alignItems(HorizontalAlign.Start);
+            Column.margin({ left: 10 });
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            if (shopItem.type === 'material') {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create(getMaterialById(shopItem.id)?.name || '未知');
+                        Text.fontSize(14);
+                        Text.fontColor(Color.White);
+                    }, Text);
+                    Text.pop();
+                });
+            }
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create(getItemById(shopItem.id)?.name || '未知');
+                        Text.fontSize(14);
+                        Text.fontColor(Color.White);
+                    }, Text);
+                    Text.pop();
+                });
+            }
+        }, If);
+        If.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create(`数量: ${shopItem.amount}`);
+            Text.fontSize(12);
+            Text.fontColor('#aaaaaa');
+        }, Text);
+        Text.pop();
+        Column.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.width(80);
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create(`💰${shopItem.price}`);
+            Text.fontSize(14);
+            Text.fontColor('#FFD700');
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Button.createWithLabel('购买');
+            Button.fontSize(12);
+            Button.height(30);
+            Button.backgroundColor(this.canBuy(shopItem) ? '#4CAF50' : '#666666');
+            Button.enabled(this.canBuy(shopItem));
+            Button.onClick(() => {
+                this.buyItem(shopItem);
+            });
+        }, Button);
+        Button.pop();
+        Column.pop();
+        Row.pop();
+    }
+    getItemIcon(itemId: string): string {
+        const item = getItemById(itemId);
+        return item ? item.icon : '📦';
+    }
+    canBuy(shopItem: ShopItem): boolean {
+        return this.gameManager.getUserState().gold >= shopItem.price;
+    }
+    buyItem(shopItem: ShopItem) {
+        if (!this.canBuy(shopItem))
+            return;
+        this.gameManager.addGold(-shopItem.price);
+        if (shopItem.type === 'material') {
+            this.gameManager.addMaterial(shopItem.id, shopItem.amount);
+        }
+        else {
+            this.gameManager.addItem(shopItem.id, shopItem.amount);
+        }
+        this.merchantItems = this.merchantItems.filter(item => item !== shopItem);
     }
     rerender() {
         this.updateDirtyElements();

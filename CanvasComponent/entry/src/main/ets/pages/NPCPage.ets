@@ -1,6 +1,6 @@
 import { GamePage } from '../model/GameTypes'
 import { GameManager } from '../model/GameManager'
-import { FixedNPCs, FixedNPC, getStoryByTrust, NPCStory } from '../model/NPC'
+import { FixedNPCs, FixedNPC, getStoryByTrust, NPCStory, NPCSpecialRecipes, NPCSpecialRecipe } from '../model/NPC'
 import { AllRecipes, AlchemyRecipe } from '../model/AlchemyRecipe'
 import { NPCAvatar } from '../components/NPCAvatar'
 
@@ -9,8 +9,10 @@ export struct NPCPage {
   @Link currentPage: GamePage
   @State selectedNPC: FixedNPC | null = null
   @State showStory: boolean = false
+  @State showStoryList: boolean = false
   @State currentStory: NPCStory | null = null
   @State currentRecipe: AlchemyRecipe | null = null
+  @State selectedSpecialRecipe: NPCSpecialRecipe | null = null
   
   private gameManager: GameManager = GameManager.getInstance()
   
@@ -49,6 +51,14 @@ export struct NPCPage {
       
       if (this.showStory && this.currentStory) {
         this.StoryDialog()
+      }
+      
+      if (this.showStoryList) {
+        this.StoryListDialog()
+      }
+      
+      if (this.selectedSpecialRecipe) {
+        this.RecipeDetailDialog()
       }
     }
     .width('100%')
@@ -155,25 +165,47 @@ export struct NPCPage {
             .fontSize(18)
             .fontColor(this.getTrustColor(this.getTrust(this.selectedNPC!.id)))
           
-          if (this.getTrust(this.selectedNPC!.id) < 100) {
-            Button('查看故事')
-              .height(30)
-              .backgroundColor('#9c27b0')
-              .margin({ left: 20 })
-              .onClick(() => {
-                this.currentStory = getStoryByTrust(this.selectedNPC!, this.getTrust(this.selectedNPC!.id))
-                if (this.currentStory) {
-                  this.showStory = true
-                }
-              })
-          } else {
-            Text('已满好感')
-              .fontSize(16)
+          Button('查看故事')
+            .height(30)
+            .backgroundColor('#9c27b0')
+            .margin({ left: 20 })
+            .onClick(() => {
+              this.currentStory = getStoryByTrust(this.selectedNPC!, this.getTrust(this.selectedNPC!.id))
+              if (this.currentStory) {
+                this.showStory = true
+              }
+            })
+          
+          if (this.getTrust(this.selectedNPC!.id) === 100) {
+            Text('♥')
+              .fontSize(20)
               .fontColor('#ff69b4')
-              .margin({ left: 20 })
+              .margin({ left: 10 })
           }
         }
         .margin({ top: 20 })
+        
+        if (this.getTrust(this.selectedNPC!.id) === 100) {
+          Column() {
+            Text('━━━━━━━━━━━━━━━')
+              .fontSize(14)
+              .fontColor('#666666')
+              .margin({ top: 15, bottom: 10 })
+            
+            Text('已解锁所有故事')
+              .fontSize(16)
+              .fontColor('#ff69b4')
+            
+            Button('查看所有故事')
+              .height(35)
+              .backgroundColor('#e91e63')
+              .margin({ top: 10 })
+              .onClick(() => {
+                this.showStoryList = true
+              })
+          }
+          .width('100%')
+        }
         
         Text(`任务特点: ${this.selectedNPC!.taskType}`)
           .fontSize(14)
@@ -247,26 +279,234 @@ export struct NPCPage {
         .fontColor('#FFD700')
         .margin({ bottom: 20 })
       
-      Text(this.currentStory!.content)
-        .fontSize(16)
-        .fontColor(Color.White)
-        .textAlign(TextAlign.Center)
-        .padding({ left: 20, right: 20 })
+      Scroll() {
+        Column() {
+          Text(this.currentStory!.content)
+            .fontSize(16)
+            .fontColor(Color.White)
+            .textAlign(TextAlign.Center)
+            .padding({ left: 20, right: 20 })
+            .margin({ bottom: 20 })
+          
+          if (this.currentStory!.letter) {
+            Column() {
+              Text('━━━━━━━━━━━━━━━')
+                .fontSize(14)
+                .fontColor('#666666')
+                .margin({ bottom: 15 })
+              
+              Text('✉️ 信件')
+                .fontSize(18)
+                .fontColor('#FFD700')
+                .margin({ bottom: 10 })
+              
+              Text(this.currentStory!.letter!)
+                .fontSize(14)
+                .fontColor('#aaaaaa')
+                .padding({ left: 20, right: 20 })
+                .lineHeight(22)
+            }
+          }
+          
+          if (this.currentStory!.specialRecipe) {
+            Column() {
+              Text('━━━━━━━━━━━━━━━')
+                .fontSize(14)
+                .fontColor('#666666')
+                .margin({ top: 20, bottom: 15 })
+              
+              Text('📜 获得特殊配方')
+                .fontSize(18)
+                .fontColor('#FFD700')
+                .margin({ bottom: 10 })
+              
+              Button(this.getRecipeName(this.currentStory!.specialRecipe!))
+                .backgroundColor('#9c27b0')
+                .onClick(() => {
+                  const recipe = NPCSpecialRecipes.find(r => r.id === this.currentStory!.specialRecipe)
+                  if (recipe) {
+                    this.selectedSpecialRecipe = recipe
+                  }
+                })
+            }
+          }
+        }
+        .width('100%')
+      }
+      .width('100%')
+      .layoutWeight(1)
+      .scrollBar(BarState.Off)
       
       Button('确定')
         .width('60%')
         .height(50)
         .backgroundColor('#9c27b0')
-        .margin({ top: 30 })
+        .margin({ top: 20 })
         .onClick(() => {
           this.showStory = false
         })
     }
-    .width('80%')
-    .padding(30)
+    .width('85%')
+    .height('70%')
+    .padding(20)
     .backgroundColor('rgba(30, 30, 30, 0.98)')
     .borderRadius(15)
-    .justifyContent(FlexAlign.Center)
+  }
+  
+  @Builder
+  StoryListDialog() {
+    Column() {
+      Text(`${this.selectedNPC!.name}的故事`)
+        .fontSize(22)
+        .fontColor('#FFD700')
+        .margin({ bottom: 20 })
+      
+      Scroll() {
+        Column() {
+          ForEach(this.selectedNPC!.stories, (story: NPCStory, index: number) => {
+            Column() {
+              Row() {
+                Text(`第${story.level}阶段`)
+                  .fontSize(14)
+                  .fontColor('#888888')
+                
+                Text(story.title)
+                  .fontSize(18)
+                  .fontColor(Color.White)
+                  .layoutWeight(1)
+                  .margin({ left: 10 })
+              }
+              .width('100%')
+              
+              Row() {
+                if (story.letter) {
+                  Text('✉️')
+                    .fontSize(16)
+                    .margin({ right: 10 })
+                }
+                if (story.specialRecipe) {
+                  Text('📜')
+                    .fontSize(16)
+                    .margin({ right: 10 })
+                }
+                Button('查看详情')
+                  .height(30)
+                  .backgroundColor('#4a90e2')
+                  .onClick(() => {
+                    this.currentStory = story
+                    this.showStoryList = false
+                    this.showStory = true
+                  })
+              }
+              .width('100%')
+              .justifyContent(FlexAlign.End)
+              .margin({ top: 10 })
+            }
+            .width('100%')
+            .padding(15)
+            .backgroundColor('rgba(60, 60, 60, 0.8)')
+            .borderRadius(8)
+            .margin({ bottom: 10 })
+          })
+        }
+        .width('90%')
+      }
+      .width('100%')
+      .layoutWeight(1)
+      .scrollBar(BarState.Off)
+      
+      Button('关闭')
+        .width('60%')
+        .height(50)
+        .backgroundColor('#666666')
+        .margin({ top: 20 })
+        .onClick(() => {
+          this.showStoryList = false
+        })
+    }
+    .width('85%')
+    .height('75%')
+    .padding(20)
+    .backgroundColor('rgba(30, 30, 30, 0.98)')
+    .borderRadius(15)
+  }
+  
+  @Builder
+  RecipeDetailDialog() {
+    Column() {
+      Text(this.selectedSpecialRecipe!.name)
+        .fontSize(24)
+        .fontColor('#FFD700')
+        .margin({ bottom: 10 })
+      
+      Text(this.selectedSpecialRecipe!.icon)
+        .fontSize(60)
+        .margin({ bottom: 15 })
+      
+      Scroll() {
+        Column() {
+          Text('【传说配方】')
+            .fontSize(16)
+            .fontColor('#FF00FF')
+            .margin({ bottom: 15 })
+          
+          Text(this.selectedSpecialRecipe!.description)
+            .fontSize(16)
+            .fontColor(Color.White)
+            .textAlign(TextAlign.Center)
+            .margin({ bottom: 20 })
+          
+          Text('━━━━━━━━━━━━━━━')
+            .fontSize(14)
+            .fontColor('#666666')
+            .margin({ bottom: 15 })
+          
+          Text('传说')
+            .fontSize(18)
+            .fontColor('#FFD700')
+            .margin({ bottom: 10 })
+          
+          Text(this.selectedSpecialRecipe!.legend)
+            .fontSize(14)
+            .fontColor('#aaaaaa')
+            .lineHeight(22)
+            .padding({ left: 20, right: 20 })
+            .margin({ bottom: 20 })
+          
+          Text('━━━━━━━━━━━━━━━')
+            .fontSize(14)
+            .fontColor('#666666')
+            .margin({ bottom: 15 })
+          
+          Text(`价值: ${this.selectedSpecialRecipe!.value[0]} ~ ${this.selectedSpecialRecipe!.value[1]} 金币`)
+            .fontSize(16)
+            .fontColor('#FFD700')
+            .margin({ bottom: 10 })
+          
+          Text('满好感解锁后可炼制并出售')
+            .fontSize(14)
+            .fontColor('#00ff88')
+        }
+        .width('100%')
+      }
+      .width('100%')
+      .layoutWeight(1)
+      .scrollBar(BarState.Off)
+      
+      Button('关闭')
+        .width('60%')
+        .height(50)
+        .backgroundColor('#666666')
+        .margin({ top: 20 })
+        .onClick(() => {
+          this.selectedSpecialRecipe = null
+        })
+    }
+    .width('85%')
+    .height('70%')
+    .padding(20)
+    .backgroundColor('rgba(30, 30, 30, 0.98)')
+    .borderRadius(15)
   }
   
   getTrust(npcId: string): number {
@@ -318,5 +558,10 @@ export struct NPCPage {
     
     relationship.trust = Math.min(100, relationship.trust + amount)
     relationship.completedTasks++
+  }
+  
+  getRecipeName(recipeId: string): string {
+    const recipe = NPCSpecialRecipes.find(r => r.id === recipeId)
+    return recipe ? `${recipe.icon} ${recipe.name}` : recipeId
   }
 }

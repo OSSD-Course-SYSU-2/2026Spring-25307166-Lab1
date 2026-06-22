@@ -52,3 +52,11 @@ export const MaterialEffectDescription: Record<MaterialColorType, string> = {
     [MaterialColorType.BLUE]: '深邃海洋效果',
     [MaterialColorType.PURPLE]: '魔法漩涡效果'
 };
+export interface UserAttributes {
+    combatPower: number;
+    social: number;
+    luck: number;
+    mysticism: number;
+    perception: number;
+    craftsmanship: number;
+}

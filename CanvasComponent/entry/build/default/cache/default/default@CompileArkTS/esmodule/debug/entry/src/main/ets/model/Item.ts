@@ -9,7 +9,7 @@ export interface Item {
     formationMatch?: string; // 匹配的法阵类型
 }
 export interface ItemEffect {
-    type: 'stamina' | 'combatPower' | 'social' | 'luck' | 'gold' | 'materialDrop';
+    type: 'stamina' | 'combatPower' | 'social' | 'luck' | 'gold' | 'materialDrop' | 'mysticism' | 'perception' | 'craftsmanship';
     value: number;
     duration?: number;
     description: string;

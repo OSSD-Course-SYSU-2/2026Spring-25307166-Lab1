@@ -5,14 +5,16 @@ interface NPCPage_Params {
     currentPage?: GamePage;
     selectedNPC?: FixedNPC | null;
     showStory?: boolean;
+    showStoryList?: boolean;
     currentStory?: NPCStory | null;
     currentRecipe?: AlchemyRecipe | null;
+    selectedSpecialRecipe?: NPCSpecialRecipe | null;
     gameManager?: GameManager;
 }
 import { GamePage } from "@bundle:com.example.canvascomponent/entry/ets/model/GameTypes";
 import { GameManager } from "@bundle:com.example.canvascomponent/entry/ets/model/GameManager";
-import { FixedNPCs, getStoryByTrust } from "@bundle:com.example.canvascomponent/entry/ets/model/NPC";
-import type { FixedNPC, NPCStory } from "@bundle:com.example.canvascomponent/entry/ets/model/NPC";
+import { FixedNPCs, getStoryByTrust, NPCSpecialRecipes } from "@bundle:com.example.canvascomponent/entry/ets/model/NPC";
+import type { FixedNPC, NPCStory, NPCSpecialRecipe } from "@bundle:com.example.canvascomponent/entry/ets/model/NPC";
 import { AllRecipes } from "@bundle:com.example.canvascomponent/entry/ets/model/AlchemyRecipe";
 import type { AlchemyRecipe } from "@bundle:com.example.canvascomponent/entry/ets/model/AlchemyRecipe";
 import { NPCAvatar } from "@bundle:com.example.canvascomponent/entry/ets/components/NPCAvatar";
@@ -25,8 +27,10 @@ export class NPCPage extends ViewPU {
         this.__currentPage = new SynchedPropertySimpleTwoWayPU(params.currentPage, this, "currentPage");
         this.__selectedNPC = new ObservedPropertyObjectPU(null, this, "selectedNPC");
         this.__showStory = new ObservedPropertySimplePU(false, this, "showStory");
+        this.__showStoryList = new ObservedPropertySimplePU(false, this, "showStoryList");
         this.__currentStory = new ObservedPropertyObjectPU(null, this, "currentStory");
         this.__currentRecipe = new ObservedPropertyObjectPU(null, this, "currentRecipe");
+        this.__selectedSpecialRecipe = new ObservedPropertyObjectPU(null, this, "selectedSpecialRecipe");
         this.gameManager = GameManager.getInstance();
         this.setInitiallyProvidedValue(params);
         this.finalizeConstruction();
@@ -38,11 +42,17 @@ export class NPCPage extends ViewPU {
         if (params.showStory !== undefined) {
             this.showStory = params.showStory;
         }
+        if (params.showStoryList !== undefined) {
+            this.showStoryList = params.showStoryList;
+        }
         if (params.currentStory !== undefined) {
             this.currentStory = params.currentStory;
         }
         if (params.currentRecipe !== undefined) {
             this.currentRecipe = params.currentRecipe;
+        }
+        if (params.selectedSpecialRecipe !== undefined) {
+            this.selectedSpecialRecipe = params.selectedSpecialRecipe;
         }
         if (params.gameManager !== undefined) {
             this.gameManager = params.gameManager;
@@ -54,15 +64,19 @@ export class NPCPage extends ViewPU {
         this.__currentPage.purgeDependencyOnElmtId(rmElmtId);
         this.__selectedNPC.purgeDependencyOnElmtId(rmElmtId);
         this.__showStory.purgeDependencyOnElmtId(rmElmtId);
+        this.__showStoryList.purgeDependencyOnElmtId(rmElmtId);
         this.__currentStory.purgeDependencyOnElmtId(rmElmtId);
         this.__currentRecipe.purgeDependencyOnElmtId(rmElmtId);
+        this.__selectedSpecialRecipe.purgeDependencyOnElmtId(rmElmtId);
     }
     aboutToBeDeleted() {
         this.__currentPage.aboutToBeDeleted();
         this.__selectedNPC.aboutToBeDeleted();
         this.__showStory.aboutToBeDeleted();
+        this.__showStoryList.aboutToBeDeleted();
         this.__currentStory.aboutToBeDeleted();
         this.__currentRecipe.aboutToBeDeleted();
+        this.__selectedSpecialRecipe.aboutToBeDeleted();
         SubscriberManager.Get().delete(this.id__());
         this.aboutToBeDeletedInternal();
     }
@@ -87,6 +101,13 @@ export class NPCPage extends ViewPU {
     set showStory(newValue: boolean) {
         this.__showStory.set(newValue);
     }
+    private __showStoryList: ObservedPropertySimplePU<boolean>;
+    get showStoryList() {
+        return this.__showStoryList.get();
+    }
+    set showStoryList(newValue: boolean) {
+        this.__showStoryList.set(newValue);
+    }
     private __currentStory: ObservedPropertyObjectPU<NPCStory | null>;
     get currentStory() {
         return this.__currentStory.get();
@@ -100,6 +121,13 @@ export class NPCPage extends ViewPU {
     }
     set currentRecipe(newValue: AlchemyRecipe | null) {
         this.__currentRecipe.set(newValue);
+    }
+    private __selectedSpecialRecipe: ObservedPropertyObjectPU<NPCSpecialRecipe | null>;
+    get selectedSpecialRecipe() {
+        return this.__selectedSpecialRecipe.get();
+    }
+    set selectedSpecialRecipe(newValue: NPCSpecialRecipe | null) {
+        this.__selectedSpecialRecipe.set(newValue);
     }
     private gameManager: GameManager;
     initialRender() {
@@ -177,6 +205,32 @@ export class NPCPage extends ViewPU {
             }
         }, If);
         If.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            if (this.showStoryList) {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.StoryListDialog.bind(this)();
+                });
+            }
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                });
+            }
+        }, If);
+        If.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            if (this.selectedSpecialRecipe) {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.RecipeDetailDialog.bind(this)();
+                });
+            }
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                });
+            }
+        }, If);
+        If.pop();
         Column.pop();
     }
     NPCCard(npc: FixedNPC, parent = null) {
@@ -195,7 +249,7 @@ export class NPCPage extends ViewPU {
         {
             this.observeComponentCreation2((elmtId, isInitialRender) => {
                 if (isInitialRender) {
-                    let componentCall = new NPCAvatar(this, { npcId: npc.id, avatarSize: 80 }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/NPCPage.ets", line: 63, col: 9 });
+                    let componentCall = new NPCAvatar(this, { npcId: npc.id, avatarSize: 80 }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/NPCPage.ets", line: 73, col: 9 });
                     ViewPU.create(componentCall);
                     let paramsLambda = () => {
                         return {
@@ -335,7 +389,7 @@ export class NPCPage extends ViewPU {
         {
             this.observeComponentCreation2((elmtId, isInitialRender) => {
                 if (isInitialRender) {
-                    let componentCall = new NPCAvatar(this, { npcId: this.selectedNPC!.id, avatarSize: 120 }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/NPCPage.ets", line: 146, col: 9 });
+                    let componentCall = new NPCAvatar(this, { npcId: this.selectedNPC!.id, avatarSize: 120 }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/NPCPage.ets", line: 156, col: 9 });
                     ViewPU.create(componentCall);
                     let paramsLambda = () => {
                         return {
@@ -370,38 +424,78 @@ export class NPCPage extends ViewPU {
         }, Text);
         Text.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Button.createWithLabel('查看故事');
+            Button.height(30);
+            Button.backgroundColor('#9c27b0');
+            Button.margin({ left: 20 });
+            Button.onClick(() => {
+                this.currentStory = getStoryByTrust(this.selectedNPC!, this.getTrust(this.selectedNPC!.id));
+                if (this.currentStory) {
+                    this.showStory = true;
+                }
+            });
+        }, Button);
+        Button.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
             If.create();
-            if (this.getTrust(this.selectedNPC!.id) < 100) {
+            if (this.getTrust(this.selectedNPC!.id) === 100) {
                 this.ifElseBranchUpdateFunction(0, () => {
                     this.observeComponentCreation2((elmtId, isInitialRender) => {
-                        Button.createWithLabel('查看故事');
-                        Button.height(30);
-                        Button.backgroundColor('#9c27b0');
-                        Button.margin({ left: 20 });
-                        Button.onClick(() => {
-                            this.currentStory = getStoryByTrust(this.selectedNPC!, this.getTrust(this.selectedNPC!.id));
-                            if (this.currentStory) {
-                                this.showStory = true;
-                            }
-                        });
-                    }, Button);
-                    Button.pop();
+                        Text.create('♥');
+                        Text.fontSize(20);
+                        Text.fontColor('#ff69b4');
+                        Text.margin({ left: 10 });
+                    }, Text);
+                    Text.pop();
                 });
             }
             else {
                 this.ifElseBranchUpdateFunction(1, () => {
-                    this.observeComponentCreation2((elmtId, isInitialRender) => {
-                        Text.create('已满好感');
-                        Text.fontSize(16);
-                        Text.fontColor('#ff69b4');
-                        Text.margin({ left: 20 });
-                    }, Text);
-                    Text.pop();
                 });
             }
         }, If);
         If.pop();
         Row.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            if (this.getTrust(this.selectedNPC!.id) === 100) {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Column.create();
+                        Column.width('100%');
+                    }, Column);
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create('━━━━━━━━━━━━━━━');
+                        Text.fontSize(14);
+                        Text.fontColor('#666666');
+                        Text.margin({ top: 15, bottom: 10 });
+                    }, Text);
+                    Text.pop();
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create('已解锁所有故事');
+                        Text.fontSize(16);
+                        Text.fontColor('#ff69b4');
+                    }, Text);
+                    Text.pop();
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Button.createWithLabel('查看所有故事');
+                        Button.height(35);
+                        Button.backgroundColor('#e91e63');
+                        Button.margin({ top: 10 });
+                        Button.onClick(() => {
+                            this.showStoryList = true;
+                        });
+                    }, Button);
+                    Button.pop();
+                    Column.pop();
+                });
+            }
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                });
+            }
+        }, If);
+        If.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Text.create(`任务特点: ${this.selectedNPC!.taskType}`);
             Text.fontSize(14);
@@ -492,11 +586,11 @@ export class NPCPage extends ViewPU {
     StoryDialog(parent = null) {
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Column.create();
-            Column.width('80%');
-            Column.padding(30);
+            Column.width('85%');
+            Column.height('70%');
+            Column.padding(20);
             Column.backgroundColor('rgba(30, 30, 30, 0.98)');
             Column.borderRadius(15);
-            Column.justifyContent(FlexAlign.Center);
         }, Column);
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Text.create(this.currentStory!.title);
@@ -506,21 +600,349 @@ export class NPCPage extends ViewPU {
         }, Text);
         Text.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Scroll.create();
+            Scroll.width('100%');
+            Scroll.layoutWeight(1);
+            Scroll.scrollBar(BarState.Off);
+        }, Scroll);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.width('100%');
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
             Text.create(this.currentStory!.content);
             Text.fontSize(16);
             Text.fontColor(Color.White);
             Text.textAlign(TextAlign.Center);
             Text.padding({ left: 20, right: 20 });
+            Text.margin({ bottom: 20 });
         }, Text);
         Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            if (this.currentStory!.letter) {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Column.create();
+                    }, Column);
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create('━━━━━━━━━━━━━━━');
+                        Text.fontSize(14);
+                        Text.fontColor('#666666');
+                        Text.margin({ bottom: 15 });
+                    }, Text);
+                    Text.pop();
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create('✉️ 信件');
+                        Text.fontSize(18);
+                        Text.fontColor('#FFD700');
+                        Text.margin({ bottom: 10 });
+                    }, Text);
+                    Text.pop();
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create(this.currentStory!.letter!);
+                        Text.fontSize(14);
+                        Text.fontColor('#aaaaaa');
+                        Text.padding({ left: 20, right: 20 });
+                        Text.lineHeight(22);
+                    }, Text);
+                    Text.pop();
+                    Column.pop();
+                });
+            }
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                });
+            }
+        }, If);
+        If.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            If.create();
+            if (this.currentStory!.specialRecipe) {
+                this.ifElseBranchUpdateFunction(0, () => {
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Column.create();
+                    }, Column);
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create('━━━━━━━━━━━━━━━');
+                        Text.fontSize(14);
+                        Text.fontColor('#666666');
+                        Text.margin({ top: 20, bottom: 15 });
+                    }, Text);
+                    Text.pop();
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Text.create('📜 获得特殊配方');
+                        Text.fontSize(18);
+                        Text.fontColor('#FFD700');
+                        Text.margin({ bottom: 10 });
+                    }, Text);
+                    Text.pop();
+                    this.observeComponentCreation2((elmtId, isInitialRender) => {
+                        Button.createWithLabel(this.getRecipeName(this.currentStory!.specialRecipe!));
+                        Button.backgroundColor('#9c27b0');
+                        Button.onClick(() => {
+                            const recipe = NPCSpecialRecipes.find(r => r.id === this.currentStory!.specialRecipe);
+                            if (recipe) {
+                                this.selectedSpecialRecipe = recipe;
+                            }
+                        });
+                    }, Button);
+                    Button.pop();
+                    Column.pop();
+                });
+            }
+            else {
+                this.ifElseBranchUpdateFunction(1, () => {
+                });
+            }
+        }, If);
+        If.pop();
+        Column.pop();
+        Scroll.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Button.createWithLabel('确定');
             Button.width('60%');
             Button.height(50);
             Button.backgroundColor('#9c27b0');
-            Button.margin({ top: 30 });
+            Button.margin({ top: 20 });
             Button.onClick(() => {
                 this.showStory = false;
+            });
+        }, Button);
+        Button.pop();
+        Column.pop();
+    }
+    StoryListDialog(parent = null) {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.width('85%');
+            Column.height('75%');
+            Column.padding(20);
+            Column.backgroundColor('rgba(30, 30, 30, 0.98)');
+            Column.borderRadius(15);
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create(`${this.selectedNPC!.name}的故事`);
+            Text.fontSize(22);
+            Text.fontColor('#FFD700');
+            Text.margin({ bottom: 20 });
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Scroll.create();
+            Scroll.width('100%');
+            Scroll.layoutWeight(1);
+            Scroll.scrollBar(BarState.Off);
+        }, Scroll);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.width('90%');
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            ForEach.create();
+            const forEachItemGenFunction = (_item, index: number) => {
+                const story = _item;
+                this.observeComponentCreation2((elmtId, isInitialRender) => {
+                    Column.create();
+                    Column.width('100%');
+                    Column.padding(15);
+                    Column.backgroundColor('rgba(60, 60, 60, 0.8)');
+                    Column.borderRadius(8);
+                    Column.margin({ bottom: 10 });
+                }, Column);
+                this.observeComponentCreation2((elmtId, isInitialRender) => {
+                    Row.create();
+                    Row.width('100%');
+                }, Row);
+                this.observeComponentCreation2((elmtId, isInitialRender) => {
+                    Text.create(`第${story.level}阶段`);
+                    Text.fontSize(14);
+                    Text.fontColor('#888888');
+                }, Text);
+                Text.pop();
+                this.observeComponentCreation2((elmtId, isInitialRender) => {
+                    Text.create(story.title);
+                    Text.fontSize(18);
+                    Text.fontColor(Color.White);
+                    Text.layoutWeight(1);
+                    Text.margin({ left: 10 });
+                }, Text);
+                Text.pop();
+                Row.pop();
+                this.observeComponentCreation2((elmtId, isInitialRender) => {
+                    Row.create();
+                    Row.width('100%');
+                    Row.justifyContent(FlexAlign.End);
+                    Row.margin({ top: 10 });
+                }, Row);
+                this.observeComponentCreation2((elmtId, isInitialRender) => {
+                    If.create();
+                    if (story.letter) {
+                        this.ifElseBranchUpdateFunction(0, () => {
+                            this.observeComponentCreation2((elmtId, isInitialRender) => {
+                                Text.create('✉️');
+                                Text.fontSize(16);
+                                Text.margin({ right: 10 });
+                            }, Text);
+                            Text.pop();
+                        });
+                    }
+                    else {
+                        this.ifElseBranchUpdateFunction(1, () => {
+                        });
+                    }
+                }, If);
+                If.pop();
+                this.observeComponentCreation2((elmtId, isInitialRender) => {
+                    If.create();
+                    if (story.specialRecipe) {
+                        this.ifElseBranchUpdateFunction(0, () => {
+                            this.observeComponentCreation2((elmtId, isInitialRender) => {
+                                Text.create('📜');
+                                Text.fontSize(16);
+                                Text.margin({ right: 10 });
+                            }, Text);
+                            Text.pop();
+                        });
+                    }
+                    else {
+                        this.ifElseBranchUpdateFunction(1, () => {
+                        });
+                    }
+                }, If);
+                If.pop();
+                this.observeComponentCreation2((elmtId, isInitialRender) => {
+                    Button.createWithLabel('查看详情');
+                    Button.height(30);
+                    Button.backgroundColor('#4a90e2');
+                    Button.onClick(() => {
+                        this.currentStory = story;
+                        this.showStoryList = false;
+                        this.showStory = true;
+                    });
+                }, Button);
+                Button.pop();
+                Row.pop();
+                Column.pop();
+            };
+            this.forEachUpdateFunction(elmtId, this.selectedNPC!.stories, forEachItemGenFunction, undefined, true, false);
+        }, ForEach);
+        ForEach.pop();
+        Column.pop();
+        Scroll.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Button.createWithLabel('关闭');
+            Button.width('60%');
+            Button.height(50);
+            Button.backgroundColor('#666666');
+            Button.margin({ top: 20 });
+            Button.onClick(() => {
+                this.showStoryList = false;
+            });
+        }, Button);
+        Button.pop();
+        Column.pop();
+    }
+    RecipeDetailDialog(parent = null) {
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.width('85%');
+            Column.height('70%');
+            Column.padding(20);
+            Column.backgroundColor('rgba(30, 30, 30, 0.98)');
+            Column.borderRadius(15);
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create(this.selectedSpecialRecipe!.name);
+            Text.fontSize(24);
+            Text.fontColor('#FFD700');
+            Text.margin({ bottom: 10 });
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create(this.selectedSpecialRecipe!.icon);
+            Text.fontSize(60);
+            Text.margin({ bottom: 15 });
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Scroll.create();
+            Scroll.width('100%');
+            Scroll.layoutWeight(1);
+            Scroll.scrollBar(BarState.Off);
+        }, Scroll);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Column.create();
+            Column.width('100%');
+        }, Column);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create('【传说配方】');
+            Text.fontSize(16);
+            Text.fontColor('#FF00FF');
+            Text.margin({ bottom: 15 });
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create(this.selectedSpecialRecipe!.description);
+            Text.fontSize(16);
+            Text.fontColor(Color.White);
+            Text.textAlign(TextAlign.Center);
+            Text.margin({ bottom: 20 });
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create('━━━━━━━━━━━━━━━');
+            Text.fontSize(14);
+            Text.fontColor('#666666');
+            Text.margin({ bottom: 15 });
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create('传说');
+            Text.fontSize(18);
+            Text.fontColor('#FFD700');
+            Text.margin({ bottom: 10 });
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create(this.selectedSpecialRecipe!.legend);
+            Text.fontSize(14);
+            Text.fontColor('#aaaaaa');
+            Text.lineHeight(22);
+            Text.padding({ left: 20, right: 20 });
+            Text.margin({ bottom: 20 });
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create('━━━━━━━━━━━━━━━');
+            Text.fontSize(14);
+            Text.fontColor('#666666');
+            Text.margin({ bottom: 15 });
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create(`价值: ${this.selectedSpecialRecipe!.value[0]} ~ ${this.selectedSpecialRecipe!.value[1]} 金币`);
+            Text.fontSize(16);
+            Text.fontColor('#FFD700');
+            Text.margin({ bottom: 10 });
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create('满好感解锁后可炼制并出售');
+            Text.fontSize(14);
+            Text.fontColor('#00ff88');
+        }, Text);
+        Text.pop();
+        Column.pop();
+        Scroll.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Button.createWithLabel('关闭');
+            Button.width('60%');
+            Button.height(50);
+            Button.backgroundColor('#666666');
+            Button.margin({ top: 20 });
+            Button.onClick(() => {
+                this.selectedSpecialRecipe = null;
             });
         }, Button);
         Button.pop();
@@ -572,6 +994,10 @@ export class NPCPage extends ViewPU {
         }
         relationship.trust = Math.min(100, relationship.trust + amount);
         relationship.completedTasks++;
+    }
+    getRecipeName(recipeId: string): string {
+        const recipe = NPCSpecialRecipes.find(r => r.id === recipeId);
+        return recipe ? `${recipe.icon} ${recipe.name}` : recipeId;
     }
     rerender() {
         this.updateDirtyElements();

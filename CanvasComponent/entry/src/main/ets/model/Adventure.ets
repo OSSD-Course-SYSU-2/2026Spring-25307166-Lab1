@@ -13,14 +13,14 @@ export interface AdventureLocation {
   style: string
 }
 
-export type EventType = 'merchant' | 'alchemist' | 'danger' | 'treasure' | 'monster' | 'npc' | 'special'
+export type EventType = 'merchant' | 'alchemist' | 'danger' | 'treasure' | 'monster' | 'npc' | 'special' | 'rare_material' | 'mystical_event'
 
 export interface AdventureEvent {
   type: EventType
   name: string
   description: string
   chance: number
-  checkType: 'combatPower' | 'social' | 'luck' | 'combined'
+  checkType: 'combatPower' | 'social' | 'luck' | 'combined' | 'mysticism' | 'perception' | 'craftsmanship'
   difficulty: number
   rewards?: EventReward
   failures?: EventFailure
@@ -210,6 +210,39 @@ export const AdventureLocations: AdventureLocation[] = [
             '这是陷阱！宝箱是假的，真正的危险藏在后面！'
           ]
         }
+      },
+      {
+        type: 'merchant',
+        name: '云游商人',
+        description: '一位背着大包小包的商人向你招手',
+        chance: 18,
+        checkType: 'social',
+        difficulty: 35,
+        rewards: {
+          materialId: 'dan_zhu',
+          materialAmount: 10,
+          gold: 80,
+          itemId: 'stamina_potion_small',
+          itemAmount: 2
+        },
+        dialogues: {
+          success: [
+            '商人热情地说："来来来，看看我的货！都是好东西，便宜卖给你！"',
+            '"这位客人，我看你面善，给你打个八折！这些材料都是上等货。"'
+          ],
+          failure: [
+            '商人摆摆手："不买就算了，别耽误我生意。"',
+            '"看你也不像有钱的样子，还是去别处看看吧。"'
+          ],
+          criticalSuccess: [
+            '商人激动地说："哎呀！你是炼金大师！这些稀有材料我给你最优惠的价格！"',
+            '"难得遇到识货的！这些珍品都是我珍藏多年的，今天都便宜给你！"'
+          ],
+          criticalFailure: [
+            '商人冷哼一声："你这人真没眼光，好货都不识。"',
+            '"浪费我时间，快走开！"'
+          ]
+        }
       }
     ]
   },
@@ -321,6 +354,39 @@ export const AdventureLocations: AdventureLocation[] = [
             '这是个陷阱密室，差点被困在里面！'
           ]
         }
+      },
+      {
+        type: 'merchant',
+        name: '地下黑市商人',
+        description: '阴暗角落里，一个神秘商人向你示意',
+        chance: 15,
+        checkType: 'social',
+        difficulty: 50,
+        rewards: {
+          materialId: 'siren_tear',
+          materialAmount: 5,
+          gold: 120,
+          itemId: 'combat_elixir',
+          itemAmount: 1
+        },
+        dialogues: {
+          success: [
+            '商人压低声音："嘘...这里的东西不便宜，但都是真货。"',
+            '"地下世界的宝贝，外面可买不到。怎么样，要看看吗？"'
+          ],
+          failure: [
+            '商人警惕地看着你："你看起来不像道上的人。"',
+            '"抱歉，我不做陌生人生意。"'
+          ],
+          criticalSuccess: [
+            '商人眼睛一亮："哦？你是懂行的！这些稀有货都是极品，给你友情价！"',
+            '"难得遇到识货的，这些宝贝都便宜卖给你！"'
+          ],
+          criticalFailure: [
+            '商人突然大喊："守卫！有入侵者！"',
+            '"你这种人，不配看我的货！滚！"'
+          ]
+        }
       }
     ]
   },
@@ -429,6 +495,73 @@ export const AdventureLocations: AdventureLocation[] = [
           criticalFailure: [
             '岩洞的入口突然坍塌，你险些被困住！',
             '这是个废弃的陷阱岩洞，浪费了大量体力。'
+          ]
+        }
+      },
+      {
+        type: 'merchant',
+        name: '悬崖行者',
+        description: '一位能在悬崖间自如穿梭的神秘商人',
+        chance: 12,
+        checkType: 'social',
+        difficulty: 45,
+        rewards: {
+          materialId: 'turquoise_dragon_scale',
+          materialAmount: 2,
+          gold: 100,
+          itemId: 'luck_amulet',
+          itemAmount: 1
+        },
+        dialogues: {
+          success: [
+            '行者微笑道："能在悬崖上遇到同行者，真是缘分。需要补给吗？"',
+            '"悬崖上的风景独好，但危险也多。我这里有些保命的好东西。"'
+          ],
+          failure: [
+            '行者摇头："你还不适合在悬崖上行走，太危险了。"',
+            '"下次准备好了再来吧。"'
+          ],
+          criticalSuccess: [
+            '行者惊喜地说："你也是悬崖的征服者！这些珍品给你，算是我的一点敬意！"',
+            '"难得遇到同好！这些稀有材料都是我在悬崖上收集多年的！"'
+          ],
+          criticalFailure: [
+            '行者冷淡地说："你的态度让我不悦。"',
+            '"我不和不懂尊重的人做生意。"'
+          ]
+        }
+      },
+      {
+        type: 'danger',
+        name: '山崩危机',
+        description: '悬崖突然开始震动，山崩即将来临！',
+        chance: 20,
+        checkType: 'luck',
+        difficulty: 70,
+        rewards: {
+          materialId: 'ridge_mother_rock',
+          materialAmount: 3
+        },
+        failures: {
+          staminaLoss: 25,
+          goldLoss: 60
+        },
+        dialogues: {
+          success: [
+            '你敏捷地躲避了滚石，还发现了一块岭根母岩！',
+            '山崩暴露了隐藏的宝藏，真是因祸得福！'
+          ],
+          failure: [
+            '被滚石击中，你损失了不少财物。',
+            '山崩中你狼狈逃窜，损失惨重。'
+          ],
+          criticalSuccess: [
+            '你完美地预判了山崩的轨迹，不仅毫发无伤，还收获了大量稀有材料！',
+            '这次山崩为你暴露了悬崖深处的宝藏！'
+          ],
+          criticalFailure: [
+            '山崩将你困在死角，好不容易才脱困，损失极重！',
+            '巨石砸中了你，不仅损失体力，连背包都被砸坏了！'
           ]
         }
       }
@@ -543,6 +676,73 @@ export const AdventureLocations: AdventureLocation[] = [
           criticalFailure: [
             '你触发了宝库的最强防护，险些丧命！',
             '巨龙的诅咒！不仅没拿到宝物，还损失惨重！'
+          ]
+        }
+      },
+      {
+        type: 'merchant',
+        name: '龙穴商人',
+        description: '一个胆大包天的商人在龙穴边缘摆摊',
+        chance: 10,
+        checkType: 'social',
+        difficulty: 60,
+        rewards: {
+          materialId: 'undead_dream',
+          materialAmount: 3,
+          gold: 200,
+          itemId: 'berserker_elixir',
+          itemAmount: 1
+        },
+        dialogues: {
+          success: [
+            '商人咧嘴一笑："敢来龙穴的都是勇士！我这有好东西，敢买吗？"',
+            '"龙穴的宝贝，外面可买不到。来，看看？"'
+          ],
+          failure: [
+            '商人摇头："你看起来不够胆大，还是算了吧。"',
+            '"龙穴不是胆小鬼该来的地方。"'
+          ],
+          criticalSuccess: [
+            '商人竖起大拇指："好胆色！这些极品都给你，算我交个朋友！"',
+            '"难得遇到这么有胆量的！这些宝贝都是我冒死收集的！"'
+          ],
+          criticalFailure: [
+            '商人冷笑："你这种人，不配在龙穴做生意。"',
+            '"快滚，别耽误我发财！"'
+          ]
+        }
+      },
+      {
+        type: 'danger',
+        name: '龙息陷阱',
+        description: '你踩到了龙息残留的陷阱，火焰喷涌而出！',
+        chance: 25,
+        checkType: 'luck',
+        difficulty: 75,
+        rewards: {
+          materialId: 'phoenix_ash',
+          materialAmount: 2
+        },
+        failures: {
+          staminaLoss: 30,
+          materialLoss: { materialId: 'fairy_dust', amount: 3 }
+        },
+        dialogues: {
+          success: [
+            '你迅速躲开龙息，还发现了一些凤凰灰烬！',
+            '龙息陷阱反而暴露了隐藏的宝藏！'
+          ],
+          failure: [
+            '龙息烧伤了你，你损失了一些材料。',
+            '火焰吞噬了你的一部分财物！'
+          ],
+          criticalSuccess: [
+            '你完美地利用龙息陷阱，不仅毫发无伤，还获得了大量凤凰灰烬！',
+            '龙息的残留魔力为你所用，收获丰厚！'
+          ],
+          criticalFailure: [
+            '龙息陷阱的威力超乎想象，你被严重烧伤！',
+            '火焰不仅烧伤了你的身体，还烧毁了你的材料！'
           ]
         }
       }

@@ -10,7 +10,7 @@ export interface Item {
 }
 
 export interface ItemEffect {
-  type: 'stamina' | 'combatPower' | 'social' | 'luck' | 'gold' | 'materialDrop'
+  type: 'stamina' | 'combatPower' | 'social' | 'luck' | 'gold' | 'materialDrop' | 'mysticism' | 'perception' | 'craftsmanship'
   value: number
   duration?: number
   description: string

@@ -180,13 +180,33 @@ export class UserPage extends ViewPU {
             Column.margin({ top: 20 });
         }, Column);
         this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Button.createWithLabel('🔧 测试功能：获得所有资源');
+            Button.width('90%');
+            Button.backgroundColor('#9c27b0');
+            Button.onClick(() => {
+                this.testGetAllResources();
+            });
+            Button.margin({ top: 20 });
+        }, Button);
+        Button.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Button.createWithLabel('💖 测试功能：NPC好感满值');
+            Button.width('90%');
+            Button.backgroundColor('#e91e63');
+            Button.onClick(() => {
+                this.testMaxNPCFavor();
+            });
+            Button.margin({ top: 10 });
+        }, Button);
+        Button.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
             Button.createWithLabel('注销');
             Button.width('90%');
             Button.backgroundColor('#f44336');
             Button.onClick(() => {
                 this.currentPage = GamePage.INTRO;
             });
-            Button.margin({ top: 20 });
+            Button.margin({ top: 10 });
         }, Button);
         Button.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
@@ -382,7 +402,7 @@ export class UserPage extends ViewPU {
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Row.create();
             Row.width('100%');
-            Row.padding({ top: 10, bottom: 5 });
+            Row.margin({ top: 15, bottom: 10 });
         }, Row);
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Text.create(colorType);
@@ -393,12 +413,44 @@ export class UserPage extends ViewPU {
         Text.pop();
         Row.pop();
     }
-    getMaterialsByColor(colorType: MaterialColorType): MaterialData[] {
-        return AllMaterials.filter((m: MaterialData) => m.colorType === colorType);
-    }
     getColorHex(colorType: MaterialColorType): string {
         const color = MaterialColors[colorType];
         return `#${color.r.toString(16).padStart(2, '0')}${color.g.toString(16).padStart(2, '0')}${color.b.toString(16).padStart(2, '0')}`;
+    }
+    testGetAllResources() {
+        // 所有原材料100个
+        AllMaterials.forEach((m: MaterialData) => {
+            this.gameManager.addMaterial(m.id, 100);
+        });
+        // 所有物品10个
+        const allItemIds = [
+            'stamina_potion_small', 'stamina_potion_medium', 'stamina_potion_large',
+            'social_perfume', 'lucky_cookie', 'material_magnet',
+            'combat_elixir', 'luck_amulet', 'perception_potion', 'craftsmanship_boost',
+            'super_stamina_potion', 'rage_elixir', 'wind_walk_potion', 'shadow_cloak',
+            'ancient_blessing', 'phoenix_feather', 'divine_essence', 'world_tree_sap',
+            'gold_coin_bag', 'mystic_orb', 'elemental_crystal', 'fortune_card',
+            'mysticism_tome', 'craftsman_kit', 'explorer_compass'
+        ];
+        allItemIds.forEach((itemId: string) => {
+            this.gameManager.addItem(itemId, 10);
+        });
+        // 大量金币
+        this.gameManager.addGold(100000);
+    }
+    testMaxNPCFavor() {
+        const npcIds = ['opaque', 'talia', 'paparacha', 'elder_wise', 'merchant_rare'];
+        npcIds.forEach((npcId: string) => {
+            this.gameManager.getUserState().npcRelationships.set(npcId, {
+                npcId: npcId,
+                trust: 100,
+                completedTasks: 10,
+                currentTask: null
+            });
+        });
+    }
+    getMaterialsByColor(colorType: MaterialColorType): MaterialData[] {
+        return AllMaterials.filter((m: MaterialData) => m.colorType === colorType);
     }
     rerender() {
         this.updateDirtyElements();

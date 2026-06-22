@@ -35,6 +35,9 @@ export class GameManager {
             combatPower: Math.floor(Math.random() * 41) + 40,
             social: Math.floor(Math.random() * 41) + 40,
             luck: Math.floor(Math.random() * 41) + 40,
+            mysticism: Math.floor(Math.random() * 41) + 40,
+            perception: Math.floor(Math.random() * 41) + 40,
+            craftsmanship: Math.floor(Math.random() * 41) + 40,
             stamina: stamina,
             maxStamina: maxStamina,
             lastStaminaUpdate: Date.now()
@@ -95,6 +98,15 @@ export class GameManager {
                 case 'luck':
                     this.userState.luck += effect.value;
                     break;
+                case 'mysticism':
+                    this.userState.mysticism += effect.value;
+                    break;
+                case 'perception':
+                    this.userState.perception += effect.value;
+                    break;
+                case 'craftsmanship':
+                    this.userState.craftsmanship += effect.value;
+                    break;
             }
         });
     }
@@ -106,8 +118,15 @@ export class GameManager {
                 return this.userState.social;
             case 'luck':
                 return this.userState.luck;
+            case 'mysticism':
+                return this.userState.mysticism;
+            case 'perception':
+                return this.userState.perception;
+            case 'craftsmanship':
+                return this.userState.craftsmanship;
             case 'combined':
-                return Math.floor((this.userState.combatPower + this.userState.social + this.userState.luck) / 3);
+                return Math.floor((this.userState.combatPower + this.userState.social + this.userState.luck +
+                    this.userState.mysticism + this.userState.perception + this.userState.craftsmanship) / 6);
             default:
                 return 50;
         }
@@ -163,5 +182,22 @@ export class GameManager {
     }
     getItemCount(itemId: string): number {
         return this.userState.items.get(itemId) || 0;
+    }
+    getNPCTrust(npcId: string): number {
+        const relationship = this.userState.npcRelationships.get(npcId);
+        return relationship ? relationship.trust : 0;
+    }
+    addNPCTrust(npcId: string, amount: number): void {
+        let relationship = this.userState.npcRelationships.get(npcId);
+        if (!relationship) {
+            relationship = {
+                npcId: npcId,
+                trust: 0,
+                completedTasks: 0,
+                currentTask: null
+            };
+            this.userState.npcRelationships.set(npcId, relationship);
+        }
+        relationship.trust = Math.min(100, relationship.trust + amount);
     }
 }

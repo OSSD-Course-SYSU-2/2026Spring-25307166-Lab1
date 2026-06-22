@@ -1541,7 +1541,7 @@
       "error": false
     },
     "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameTypes.ets": {
-      "mtimeMs": 1780923819759.2786,
+      "mtimeMs": 1782136212282.9895,
       "children": [],
       "parent": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\GameEntry.ets",
@@ -1621,12 +1621,15 @@
       "error": false
     },
     "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\CommissionPage.ets": {
-      "mtimeMs": 1780923046219.495,
+      "mtimeMs": 1782136212291.0693,
       "children": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameTypes.ets",
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameState.ets",
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\Material.ets",
-        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameManager.ets"
+        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameManager.ets",
+        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\Item.ets",
+        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameTypes.ets",
+        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\common\\utils\\MaterialPatternDrawer.ets"
       ],
       "parent": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\GameEntry.ets"
@@ -1634,7 +1637,7 @@
       "error": false
     },
     "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\AlchemyPage.ets": {
-      "mtimeMs": 1780929233949.9817,
+      "mtimeMs": 1782134602558.5183,
       "children": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameTypes.ets",
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameManager.ets",
@@ -1649,12 +1652,14 @@
       "error": false
     },
     "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\CollectionPage.ets": {
-      "mtimeMs": 1780925293975.1113,
+      "mtimeMs": 1782139058990.3047,
       "children": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameTypes.ets",
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameManager.ets",
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\Material.ets",
-        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameTypes.ets"
+        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameTypes.ets",
+        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\common\\utils\\MaterialPatternDrawer.ets",
+        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\NPC.ets"
       ],
       "parent": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\GameEntry.ets"
@@ -1662,7 +1667,7 @@
       "error": false
     },
     "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\UserPage.ets": {
-      "mtimeMs": 1780913864118.307,
+      "mtimeMs": 1782137444719.3171,
       "children": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameTypes.ets",
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameManager.ets",
@@ -1694,7 +1699,7 @@
       "error": false
     },
     "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameManager.ets": {
-      "mtimeMs": 1780929132562.5776,
+      "mtimeMs": 1782138477900.1965,
       "children": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameState.ets",
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\Material.ets",
@@ -1716,7 +1721,7 @@
       "error": false
     },
     "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameState.ets": {
-      "mtimeMs": 1780911650623.585,
+      "mtimeMs": 1782136212282.9895,
       "children": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\Material.ets",
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\NPC.ets"
@@ -1755,7 +1760,7 @@
       "error": false
     },
     "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\FormationWheelPage.ets": {
-      "mtimeMs": 1780929630631.158,
+      "mtimeMs": 1782134947862.0215,
       "children": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameTypes.ets",
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\Formation.ets",
@@ -2242,7 +2247,7 @@
       "error": false
     },
     "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\AdventurePage.ets": {
-      "mtimeMs": 1780923029296.3594,
+      "mtimeMs": 1782136212290.077,
       "children": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameTypes.ets",
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameManager.ets",
@@ -2256,7 +2261,7 @@
       "error": false
     },
     "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\NPCPage.ets": {
-      "mtimeMs": 1780917727344.4756,
+      "mtimeMs": 1782139058990.3047,
       "children": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameTypes.ets",
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameManager.ets",
@@ -2275,21 +2280,23 @@
       "parent": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameManager.ets",
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameState.ets",
-        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\NPCPage.ets"
+        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\NPCPage.ets",
+        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\CollectionPage.ets"
       ],
       "error": false
     },
     "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\Item.ets": {
-      "mtimeMs": 1780921782306.9243,
+      "mtimeMs": 1782136391492.1543,
       "children": [],
       "parent": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameManager.ets",
-        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\AdventurePage.ets"
+        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\AdventurePage.ets",
+        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\CommissionPage.ets"
       ],
       "error": false
     },
     "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\Adventure.ets": {
-      "mtimeMs": 1780913401555.373,
+      "mtimeMs": 1782136391492.1543,
       "children": [
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\GameTypes.ets",
         "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\model\\Material.ets"
@@ -3694,7 +3701,9 @@
       "mtimeMs": 1780926974575.8325,
       "children": [],
       "parent": [
-        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\AlchemyPage.ets"
+        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\AlchemyPage.ets",
+        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\CollectionPage.ets",
+        "C:\\Users\\35906\\Desktop\\A\\CanvasComponent\\CanvasComponent\\entry\\src\\main\\ets\\pages\\CommissionPage.ets"
       ],
       "error": false,
       "errorCodes": [

@@ -314,26 +314,53 @@ export class AdventurePage extends ViewPU {
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Row.create();
             Row.width('90%');
-            Row.padding({ top: 5, bottom: 5 });
+            Row.padding({ top: 2, bottom: 2 });
         }, Row);
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Text.create(`战斗力: ${this.gameManager.getUserState().combatPower}`);
-            Text.fontSize(14);
+            Text.fontSize(12);
             Text.fontColor('#ff6666');
             Text.layoutWeight(1);
         }, Text);
         Text.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Text.create(`交际: ${this.gameManager.getUserState().social}`);
-            Text.fontSize(14);
+            Text.fontSize(12);
             Text.fontColor('#66ff66');
             Text.layoutWeight(1);
         }, Text);
         Text.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Text.create(`幸运: ${this.gameManager.getUserState().luck}`);
-            Text.fontSize(14);
+            Text.fontSize(12);
             Text.fontColor('#6666ff');
+            Text.layoutWeight(1);
+        }, Text);
+        Text.pop();
+        Row.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Row.create();
+            Row.width('90%');
+            Row.padding({ top: 2, bottom: 2 });
+        }, Row);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create(`神秘: ${this.gameManager.getUserState().mysticism}`);
+            Text.fontSize(12);
+            Text.fontColor('#9966ff');
+            Text.layoutWeight(1);
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create(`感知: ${this.gameManager.getUserState().perception}`);
+            Text.fontSize(12);
+            Text.fontColor('#ff9966');
+            Text.layoutWeight(1);
+        }, Text);
+        Text.pop();
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Text.create(`技艺: ${this.gameManager.getUserState().craftsmanship}`);
+            Text.fontSize(12);
+            Text.fontColor('#66ffff');
             Text.layoutWeight(1);
         }, Text);
         Text.pop();
@@ -451,9 +478,15 @@ export class AdventurePage extends ViewPU {
         }, Text);
         Text.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
+            Scroll.create();
+            Scroll.width('100%');
+            Scroll.height('50%');
+            Scroll.scrollBar(BarState.Off);
+            Scroll.edgeEffect(EdgeEffect.Spring);
+        }, Scroll);
+        this.observeComponentCreation2((elmtId, isInitialRender) => {
             Column.create();
             Column.width('100%');
-            Column.height('50%');
         }, Column);
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             ForEach.create();
@@ -496,6 +529,7 @@ export class AdventurePage extends ViewPU {
         }, ForEach);
         ForEach.pop();
         Column.pop();
+        Scroll.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Row.create();
             Row.width('100%');
@@ -814,34 +848,93 @@ export class AdventurePage extends ViewPU {
         const diceRoll = rollDice();
         const userValue = this.gameManager.getUserState().luck;
         const success = diceRoll <= userValue;
+        const criticalSuccess = diceRoll >= 95;
+        const criticalFailure = diceRoll <= 5;
         let message = '';
         const rewards: EventReward = {};
         const failures: EventFailure = { staminaLoss: 0 };
-        if (success) {
+        const dangerLossChance = this.getDangerLossChance(location.danger);
+        const lossRoll = Math.random() * 100;
+        if (criticalSuccess) {
             const rewardType = location.mainReward[0];
             const materials = AllMaterials.filter(m => m.colorType === rewardType);
             if (materials.length > 0) {
                 const material = materials[Math.floor(Math.random() * materials.length)];
-                const amount = Math.floor(Math.random() * 3) + 1;
+                const amount = Math.floor(Math.random() * 16) + 15;
                 this.gameManager.addMaterial(material.id, amount);
                 rewards.materialId = material.id;
                 rewards.materialAmount = amount;
-                message = `探索成功！在${location.name}发现了${material.name}！`;
+                const itemDropChance = 0.5;
+                if (Math.random() < itemDropChance) {
+                    const itemAmount = Math.floor(Math.random() * 3) + 1;
+                    const randomItem = AllItems[Math.floor(Math.random() * AllItems.length)];
+                    this.gameManager.addItem(randomItem.id, itemAmount);
+                    rewards.itemId = randomItem.id;
+                    rewards.itemAmount = itemAmount;
+                }
+                const goldAmount = Math.floor(Math.random() * 200) + 100;
+                this.gameManager.addGold(goldAmount);
+                rewards.gold = goldAmount;
+                message = `大成功！在${location.name}发现了${material.name}x${amount}！还获得了额外奖励！`;
             }
         }
+        else if (success) {
+            const rewardType = location.mainReward[0];
+            const materials = AllMaterials.filter(m => m.colorType === rewardType);
+            if (materials.length > 0) {
+                const material = materials[Math.floor(Math.random() * materials.length)];
+                const amount = Math.floor(Math.random() * 16) + 5;
+                this.gameManager.addMaterial(material.id, amount);
+                rewards.materialId = material.id;
+                rewards.materialAmount = amount;
+                const itemDropChance = 0.25;
+                if (Math.random() < itemDropChance) {
+                    const itemAmount = Math.floor(Math.random() * 3) + 1;
+                    const randomItem = AllItems[Math.floor(Math.random() * AllItems.length)];
+                    this.gameManager.addItem(randomItem.id, itemAmount);
+                    rewards.itemId = randomItem.id;
+                    rewards.itemAmount = itemAmount;
+                }
+                message = `探索成功！在${location.name}发现了${material.name}x${amount}！`;
+            }
+        }
+        else if (criticalFailure) {
+            this.gameManager.useStamina(20);
+            failures.staminaLoss = 20;
+            const goldLoss = Math.floor(Math.random() * 50) + 30;
+            this.gameManager.addGold(-goldLoss);
+            failures.goldLoss = goldLoss;
+            message = `大失败！在${location.name}遭遇严重挫折，损失惨重！`;
+        }
         else {
-            message = `探索${location.name}没有收获，但至少安全返回了。`;
+            if (lossRoll < dangerLossChance) {
+                this.gameManager.useStamina(10);
+                failures.staminaLoss = 10;
+                message = `探索${location.name}失败，损失了一些体力。`;
+            }
+            else {
+                message = `探索${location.name}没有收获，但至少安全返回了。`;
+            }
         }
         return {
             success: success,
-            criticalSuccess: false,
-            criticalFailure: false,
+            criticalSuccess: criticalSuccess,
+            criticalFailure: criticalFailure,
             diceRoll: diceRoll,
             userValue: userValue,
             message: message,
             rewards: rewards,
             failures: failures
         };
+    }
+    getDangerLossChance(danger: string): number {
+        switch (danger) {
+            case '中等': return 30;
+            case '较高': return 45;
+            case '高': return 60;
+            case '极高': return 75;
+            default: return 20;
+        }
     }
     rerender() {
         this.updateDirtyElements();

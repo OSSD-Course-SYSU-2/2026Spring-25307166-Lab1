@@ -163,15 +163,6 @@ export class FormationWheelPage extends ViewPU {
                     }, Canvas);
                     Canvas.pop();
                     this.observeComponentCreation2((elmtId, isInitialRender) => {
-                        Canvas.create(this.staticContext);
-                        Canvas.width(this.screenAdapter.scaleValue(320));
-                        Canvas.height(this.screenAdapter.scaleValue(320));
-                        Canvas.onReady(() => {
-                            this.drawStaticNames();
-                        });
-                    }, Canvas);
-                    Canvas.pop();
-                    this.observeComponentCreation2((elmtId, isInitialRender) => {
                         Column.create();
                         Column.width(70);
                         Column.height(70);
@@ -305,6 +296,8 @@ export class FormationWheelPage extends ViewPU {
         ctx.stroke();
         const formationsCount = AllFormations.length;
         const anglePerFormation = (Math.PI * 2) / formationsCount;
+        ctx.font = `${this.screenAdapter.scaleFont(10)}px sans-serif`;
+        ctx.textAlign = 'center';
         for (let i = 0; i < formationsCount; i++) {
             const startAngle = (i * anglePerFormation) - Math.PI / 2;
             const endAngle = startAngle + anglePerFormation;
@@ -319,23 +312,6 @@ export class FormationWheelPage extends ViewPU {
             const textX = centerX + Math.cos(textAngle) * (radius * 0.65);
             const textY = centerY + Math.sin(textAngle) * (radius * 0.65);
             this.drawFormationPattern(ctx, textX, textY, i, this.screenAdapter.scaleValue(25));
-        }
-    }
-    drawStaticNames() {
-        const ctx = this.staticContext;
-        const canvasSize = this.screenAdapter.scaleValue(320);
-        const centerX = canvasSize / 2;
-        const centerY = canvasSize / 2;
-        const radius = this.screenAdapter.scaleValue(140);
-        const formationsCount = AllFormations.length;
-        const anglePerFormation = (Math.PI * 2) / formationsCount;
-        ctx.font = `${this.screenAdapter.scaleFont(10)}px sans-serif`;
-        ctx.textAlign = 'center';
-        for (let i = 0; i < formationsCount; i++) {
-            const startAngle = (i * anglePerFormation) - Math.PI / 2;
-            const textAngle = startAngle + anglePerFormation / 2;
-            const textX = centerX + Math.cos(textAngle) * (radius * 0.65);
-            const textY = centerY + Math.sin(textAngle) * (radius * 0.65);
             ctx.fillStyle = '#aaaaaa';
             ctx.fillText(AllFormations[i].name, textX, textY + this.screenAdapter.scaleValue(35));
         }
@@ -655,16 +631,31 @@ export class FormationWheelPage extends ViewPU {
     getItemName(): string {
         if (!this.selectedFormation)
             return '未知物品';
-        const items = [
-            '炼金药剂',
-            '魔力结晶',
-            '元素精华',
-            '神秘法器',
-            '炼金催化剂',
-            '魔法增幅器'
-        ];
-        const index = AllFormations.findIndex(f => f.name === this.selectedFormation!.name);
-        return items[index % items.length];
+        if (this.selectedFormation.name === '赤焰') {
+            return '战斗灵药';
+        }
+        else if (this.selectedFormation.name === '翠风') {
+            return '社交香水';
+        }
+        else if (this.selectedFormation.name === '幽蓝') {
+            return '幸运护身符';
+        }
+        else if (this.selectedFormation.name === '紫月') {
+            return '大型体力药水';
+        }
+        else if (this.selectedFormation.name === '虚空混沌阵') {
+            return '远古祝福';
+        }
+        else if (this.selectedFormation.name === '生命神树阵') {
+            return '体力蛋糕';
+        }
+        else if (this.selectedFormation.name === '深渊召唤阵') {
+            return '凤凰之羽';
+        }
+        else if (this.selectedFormation.name === '星辰命运阵') {
+            return '材料磁石';
+        }
+        return '炼金药剂';
     }
     getItemLevel(): number {
         if (!this.selectedFormation)
@@ -724,7 +715,38 @@ export class FormationWheelPage extends ViewPU {
         }
         const itemName = this.getItemName();
         const level = this.getItemLevel();
+        const rarity = this.getItemRarity();
+        // 根据法阵类型生成对应物品ID
+        let itemId = 'stamina_potion_small';
+        if (this.selectedFormation.name === '赤焰') {
+            itemId = 'combat_elixir';
+        }
+        else if (this.selectedFormation.name === '翠风') {
+            itemId = 'social_perfume';
+        }
+        else if (this.selectedFormation.name === '幽蓝') {
+            itemId = 'luck_amulet';
+        }
+        else if (this.selectedFormation.name === '紫月') {
+            itemId = 'stamina_potion_large';
+        }
+        else if (this.selectedFormation.name === '虚空混沌阵') {
+            itemId = 'ancient_blessing';
+        }
+        else if (this.selectedFormation.name === '生命神树阵') {
+            itemId = 'stamina_cake';
+        }
+        else if (this.selectedFormation.name === '深渊召唤阵') {
+            itemId = 'phoenix_feather';
+        }
+        else if (this.selectedFormation.name === '星辰命运阵') {
+            itemId = 'material_magnet';
+        }
+        // 添加物品到背包
+        this.gameManager.addItem(itemId, 1);
+        // 添加金币奖励
         this.gameManager.addGold(level * 50);
+        // 随机奖励材料
         const materials = ['red_spider', 'slime_heart', 'fairy_dust', 'cat_eye', 'phoenix_ash', 'demon_heart'];
         const randomMaterial = materials[Math.floor(Math.random() * materials.length)];
         this.gameManager.addMaterial(randomMaterial, Math.floor(Math.random() * 5) + 1);
